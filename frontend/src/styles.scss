@@ -1,0 +1,598 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$primary: mat.define-palette(mat.$indigo-palette, 700, 400, 900);
+$accent:  mat.define-palette(mat.$deep-purple-palette, A200, A100, A400);
+$warn:    mat.define-palette(mat.$red-palette, 600);
+
+$theme: mat.define-light-theme((
+  color: (primary: $primary, accent: $accent, warn: $warn),
+  typography: mat.define-typography-config($font-family: '"Outfit", "Inter", sans-serif'),
+  density: 0
+));
+
+@include mat.all-component-themes($theme);
+
+// ── CSS custom properties ──────────────────────────────────────────
+:root {
+  --sidebar-bg:      #080c17;
+  --sidebar-hover:   rgba(255, 255, 255, 0.08);
+  --sidebar-active:  rgba(66, 133, 244, 0.15);
+  --sidebar-border:  rgba(255, 255, 255, 0.05);
+  
+  --primary:         #2962ff;
+  --primary-light:   rgba(41, 98, 255, 0.1);
+  --primary-gradient: linear-gradient(135deg, #2962ff 0%, #764ba2 100%);
+  --primary-glow:    rgba(41, 98, 255, 0.35);
+  
+  --accent:          #aa00ff;
+  --accent-light:    rgba(170, 0, 255, 0.1);
+  --accent-gradient: linear-gradient(135deg, #aa00ff 0%, #ff00c8 100%);
+  
+  --success:         #00c853;
+  --success-light:   rgba(0, 200, 83, 0.1);
+  
+  --warning:         #ffab00;
+  --warning-light:   rgba(255, 171, 0, 0.1);
+  
+  --danger:          #d50000;
+  --danger-light:    rgba(213, 0, 0, 0.1);
+  
+  --info:            #00b0ff;
+  --info-light:      rgba(0, 176, 255, 0.1);
+  
+  --bg:              #f4f7fb;
+  --surface:         rgba(255, 255, 255, 0.72);
+  --surface-solid:   #ffffff;
+  --border:          rgba(255, 255, 255, 0.5);
+  --border-light:    rgba(255, 255, 255, 0.8);
+  --border-dark:     rgba(0, 0, 0, 0.05);
+  
+  --text-primary:    #111827;
+  --text-secondary:  #4b5563;
+  --text-muted:      #9ca3af;
+  
+  --shadow-sm:       0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md:       0 12px 28px rgba(31, 38, 135, 0.06);
+  --shadow-lg:       0 20px 40px rgba(31, 38, 135, 0.1);
+  --shadow-glow:     0 8px 24px rgba(41, 98, 255, 0.25);
+  
+  --radius-sm:       10px;
+  --radius-md:       18px;
+  --radius-lg:       28px;
+  --radius-pill:     9999px;
+  --transition:      0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ── Reset & base ───────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(at 40% 20%, hsla(228, 100%, 96%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsla(240, 100%, 97%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsla(260, 100%, 96%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, hsla(200, 100%, 94%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(220, 100%, 95%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, hsla(250, 100%, 96%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, hsla(230, 100%, 97%, 1) 0px, transparent 50%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+// ── Scrollbar ──────────────────────────────────────────────────────
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+
+// ── Glassmorphism Utility ──────────────────────────────────────────
+.glass-panel {
+  background: var(--surface);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+// ── Utility: card ──────────────────────────────────────────────────
+.card {
+  @extend .glass-panel;
+}
+
+// ── Utility: badge ─────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  backdrop-filter: blur(4px);
+
+  &.open    { background: var(--primary-light); color: var(--primary); border: 1px solid rgba(41, 98, 255, 0.2); }
+  &.closed  { background: rgba(156, 163, 175, 0.15); color: var(--text-secondary); border: 1px solid rgba(156, 163, 175, 0.2); }
+  &.cleared { background: var(--success-light); color: var(--success); border: 1px solid rgba(0, 200, 83, 0.2); }
+  &.quoted  { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(170, 0, 255, 0.2); }
+  &.partial { background: var(--warning-light); color: var(--warning); border: 1px solid rgba(255, 171, 0, 0.2); }
+  &.danger  { background: var(--danger-light); color: var(--danger); border: 1px solid rgba(213, 0, 0, 0.2); }
+}
+
+// ── Page layout helper ─────────────────────────────────────────────
+.page-container {
+  padding: 32px 40px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 32px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+}
+
+// ── Page header with icon ──────────────────────────────────────────
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  .page-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+    background: #ffffff;
+    border: 1px solid rgba(255,255,255,0.8);
+  }
+}
+
+// ── Table overrides ────────────────────────────────────────────────
+.mat-mdc-table {
+  width: 100%;
+  background: transparent !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+
+  .mat-mdc-header-row {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(8px);
+    .mat-mdc-header-cell {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-dark);
+      padding: 16px;
+    }
+  }
+
+  .mat-mdc-row {
+    transition: background var(--transition), transform var(--transition);
+    background: rgba(255, 255, 255, 0.3) !important;
+    
+    &:hover { 
+      background: rgba(255, 255, 255, 0.9) !important; 
+      transform: scale(1.002);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      z-index: 1;
+    }
+    .mat-mdc-cell { 
+      border-bottom: 1px solid var(--border-dark); 
+      font-size: 13px; 
+      padding: 16px;
+      font-weight: 500;
+    }
+    &:last-child .mat-mdc-cell { border-bottom: none; }
+  }
+}
+
+// ── Mat form field tweaks ──────────────────────────────────────────
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper { 
+    border-radius: var(--radius-md) !important; 
+    background: rgba(255,255,255,0.6) !important;
+    backdrop-filter: blur(4px);
+  }
+}
+
+// Fix mat-icon font family to use the loaded Round font
+.mat-icon {
+  font-family: 'Material Icons Round' !important;
+}
+
+// ── Loading spinner overlay ────────────────────────────────────────
+.loading-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  margin-top: 20px;
+}
+
+// ── Stat card ──────────────────────────────────────────────────────
+.stat-card {
+  @extend .glass-panel;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+  }
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.9);
+  }
+
+  &--alert { 
+    border-left: 4px solid var(--danger); 
+    background: linear-gradient(90deg, var(--danger-light) 0%, rgba(255,255,255,0.6) 100%);
+  }
+
+  .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), var(--shadow-sm);
+  }
+
+  .stat-info {
+    flex: 1;
+    min-width: 0;
+    z-index: 1;
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .stat-total {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .stat-arrow {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    transition: all var(--transition);
+    text-decoration: none;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.5);
+    padding: 8px;
+    border-radius: 50%;
+    
+    .material-icons-round { font-size: 20px; }
+    &:hover { 
+      color: #fff; 
+      background: var(--primary);
+      box-shadow: var(--shadow-glow);
+      transform: translateX(4px); 
+    }
+  }
+}
+
+
+// ── Filter bar ─────────────────────────────────────────────────────
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px 24px;
+  flex-wrap: wrap;
+
+  .filter-select {
+    width: 180px;
+    &--wide { width: 220px; }
+
+    .mat-mdc-text-field-wrapper {
+      background-color: rgba(255,255,255,0.6) !important;
+      border-radius: var(--radius-md) !important;
+      transition: all var(--transition);
+
+      &:hover {
+        background-color: rgba(255,255,255,0.9) !important;
+        box-shadow: var(--shadow-sm);
+      }
+    }
+    .mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing {
+      border-color: transparent !important;
+    }
+    &.mat-focused .mat-mdc-text-field-wrapper {
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 3px rgba(41,98,255,0.2) !important;
+    }
+  }
+
+  .result-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-left: auto;
+    background: rgba(255,255,255,0.5);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border);
+  }
+
+  .clear-btn {
+    font-size: 13px;
+    font-weight: 700;
+    height: 42px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.6);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 20px;
+    transition: all var(--transition);
+    backdrop-filter: blur(4px);
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    &:hover { 
+      border-color: rgba(213,0,0,0.3); 
+      color: var(--danger); 
+      background: var(--danger-light);
+      box-shadow: 0 4px 12px rgba(213,0,0,0.1);
+    }
+  }
+}
+
+// ── Paginator ──────────────────────────────────────────────────────
+.mat-mdc-paginator {
+  border-top: 1px solid var(--border-dark) !important;
+  background: rgba(255,255,255,0.4) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+  font-size: 13px !important;
+  font-weight: 600;
+}
+
+// ── No-data empty state ────────────────────────────────────────────
+.no-data {
+  text-align: center !important;
+  padding: 64px 20px !important;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.2);
+
+  .material-icons-round {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+    opacity: 0.4;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p { font-size: 14px; font-weight: 500; margin: 0; }
+}
+
+// ── Table toolbar (search row) & Filter bar Premium UI ───────────────────
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 24px 12px;
+  flex-wrap: wrap;
+
+  .search-field { 
+    flex: 1; 
+    min-width: 250px; 
+    max-width: 480px; 
+
+    .mat-mdc-text-field-wrapper {
+      background-color: rgba(255,255,255,0.7) !important;
+      border-radius: var(--radius-pill) !important;
+      transition: all var(--transition);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+      
+      &:hover {
+        background-color: rgba(255,255,255,1) !important;
+        box-shadow: var(--shadow-md);
+      }
+    }
+    .mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing {
+      border-color: transparent !important;
+    }
+    &.mat-focused .mat-mdc-text-field-wrapper {
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 3px rgba(41,98,255,0.2), var(--shadow-sm) !important;
+    }
+  }
+}
+
+// ── Summary chips ──────────────────────────────────────────────────
+.summary-row { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 12px; 
+  margin-bottom: 24px; 
+}
+
+.sum-chip {
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  padding: 10px 18px; 
+  border-radius: var(--radius-pill); 
+  font-size: 14px; 
+  font-weight: 600;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    background: #ffffff;
+  }
+
+  .material-icons-round { 
+    font-size: 18px; 
+    padding: 4px;
+    border-radius: 50%;
+  }
+  
+  strong { font-weight: 800; font-size: 15px; }
+  
+  &--blue { 
+    color: var(--primary); 
+    .material-icons-round { background: var(--primary-light); }
+  }
+  &--green { 
+    color: var(--success); 
+    .material-icons-round { background: var(--success-light); }
+  }
+  &--orange { 
+    color: var(--warning); 
+    .material-icons-round { background: var(--warning-light); }
+  }
+  &--purple { 
+    color: var(--accent); 
+    .material-icons-round { background: var(--accent-light); }
+  }
+  &--red { 
+    color: var(--danger); 
+    .material-icons-round { background: var(--danger-light); }
+  }
+}
+
+// ── Table utility classes ──────────────────────────────────────────
+.table-card { overflow: hidden; padding-top: 8px; }
+.w-full { width: 100%; }
+
+.doc-no {
+  font-family: 'Courier New', monospace; 
+  font-size: 13px;
+  background: rgba(255,255,255,0.6); 
+  padding: 4px 8px; 
+  border-radius: 6px;
+  color: var(--primary); 
+  font-weight: 700;
+  border: 1px solid var(--border-dark);
+}
+
+.ref-no { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+.desc-cell { max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+
+.credit-amt { color: var(--success); font-weight: 800; }
+.debit-amt  { color: var(--danger);  font-weight: 800; }
+
+// Aging chips in invoice table
+.aging-chip {
+  display: inline-block; padding: 4px 10px; border-radius: var(--radius-pill);
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+  &.aging-ok     { background: var(--success-light); color: var(--success); }
+  &.aging-warn   { background: var(--warning-light); color: var(--warning); }
+  &.aging-orange { background: var(--accent-light);  color: var(--accent);  }
+  &.aging-danger { background: var(--danger-light);  color: var(--danger);  }
+}
+
+// Aging bucket badges
+.bucket-blue   { background: var(--primary-light); color: var(--primary); }
+.bucket-green  { background: var(--success-light); color: var(--success); }
+.bucket-orange { background: var(--accent-light);  color: var(--accent);  }
+.bucket-red    { background: var(--danger-light);  color: var(--danger);  }
+
+.days-chip {
+  display: inline-block; padding: 2px 8px; border-radius: var(--radius-pill);
+  font-size: 11px; font-weight: 800;
+}
+
+.pdf-btn {
+  color: var(--danger) !important;
+  background: var(--danger-light) !important;
+  border-radius: 8px !important;
+  width: 36px !important; height: 36px !important;
+  display: flex !important; align-items: center; justify-content: center;
+  transition: all var(--transition) !important;
+  
+  .material-icons-round { font-size: 20px; }
+  
+  &:hover {
+    background: var(--danger) !important;
+    color: #fff !important;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(213,0,0,0.3);
+  }
+}

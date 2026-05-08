@@ -1,0 +1,71 @@
+.aging-top {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.bucket-cards {
+  padding: 20px 24px;
+  h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
+}
+
+.bucket-list { display: flex; flex-direction: column; gap: 10px; }
+
+.bucket-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px; border-radius: 8px; border-left: 4px solid transparent;
+
+  .bucket-label { font-size: 13px; font-weight: 500; }
+  .bucket-value { font-size: 14px; font-weight: 700; }
+
+  &.bucket-blue   { background: var(--primary-light); border-left-color: var(--primary); color: var(--primary); }
+  &.bucket-green  { background: var(--success-light); border-left-color: var(--success); color: var(--success); }
+  &.bucket-orange { background: var(--warning-light); border-left-color: var(--warning); color: var(--warning); }
+  &.bucket-red    { background: var(--danger-light);  border-left-color: var(--danger);  color: var(--danger);  }
+}
+
+.bucket-total {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+  font-size: 13px; color: var(--text-secondary);
+  strong { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+}
+
+.chart-card {
+  padding: 20px 24px;
+  h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
+  .chart-body { height: 200px; position: relative; }
+}
+
+.table-card { overflow: hidden; }
+
+.table-header-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px;
+  h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .result-count { font-size: 12px; color: var(--text-muted); }
+}
+
+.w-full { width: 100%; }
+
+.doc-no {
+  font-family: 'Courier New', monospace; font-size: 12px;
+  background: var(--bg); padding: 2px 6px; border-radius: 4px; color: var(--primary); font-weight: 600;
+}
+
+.days-chip {
+  display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;
+  &.bucket-blue   { background: var(--primary-light); color: var(--primary); }
+  &.bucket-green  { background: var(--success-light); color: var(--success); }
+  &.bucket-orange { background: var(--warning-light); color: var(--warning); }
+  &.bucket-red    { background: var(--danger-light);  color: var(--danger);  }
+}
+
+.badge {
+  &.bucket-blue   { background: var(--primary-light); color: var(--primary); }
+  &.bucket-green  { background: var(--success-light); color: var(--success); }
+  &.bucket-orange { background: var(--warning-light); color: var(--warning); }
+  &.bucket-red    { background: var(--danger-light);  color: var(--danger);  }
+}

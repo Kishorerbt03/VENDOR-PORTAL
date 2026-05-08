@@ -1,0 +1,114 @@
+<div class="login-root">
+
+  <!-- ── Left brand panel ──────────────────────────────────────── -->
+  <div class="login-brand">
+    <div class="brand-top">
+      <div class="brand-logo">
+        <span class="material-icons-round">inventory_2</span>
+      </div>
+      <div class="brand-name">
+        <span class="brand-title">Vendor Portal</span>
+        <span class="brand-sub">by Kaar Technologies</span>
+      </div>
+    </div>
+
+    <div class="brand-body">
+      <h2>Streamline your procurement &amp; finance operations</h2>
+      <p>Access real-time SAP data for purchase orders, invoices, and vendor analytics — all in one place.</p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="fi-icon"><span class="material-icons-round">request_quote</span></div>
+          <span>Request for Quotation</span>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon"><span class="material-icons-round">shopping_cart</span></div>
+          <span>Purchase Order Tracking</span>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon"><span class="material-icons-round">local_shipping</span></div>
+          <span>Goods Receipt Management</span>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon"><span class="material-icons-round">receipt_long</span></div>
+          <span>Invoice &amp; Financial Sheet</span>
+        </div>
+        <div class="feature-item">
+          <div class="fi-icon"><span class="material-icons-round">bar_chart</span></div>
+          <span>Aging &amp; Credit Memo Reports</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-foot">
+      <span class="material-icons-round" style="font-size:14px;opacity:.5">lock</span>
+      <span>SAP ERP Integrated · Secure SOAP Connection</span>
+    </div>
+  </div>
+
+  <!-- ── Right form panel ──────────────────────────────────────── -->
+  <div class="login-form-panel">
+    <div class="login-card">
+
+      <div class="card-header">
+        <div class="card-icon">
+          <span class="material-icons-round">account_circle</span>
+        </div>
+        <h2>Sign in to your account</h2>
+        <p>Enter your Vendor ID and password to continue</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate autocomplete="on">
+
+        <div class="custom-input-group">
+          <label>Vendor ID</label>
+          <div class="input-wrapper" [class.error]="form.get('vendor_id')?.invalid && form.get('vendor_id')?.touched">
+            <span class="material-icons-round input-icon">badge</span>
+            <input type="text" formControlName="vendor_id" placeholder="e.g. 0000100001" autocomplete="username">
+          </div>
+          @if (form.get('vendor_id')?.hasError('required') && form.get('vendor_id')?.touched) {
+            <span class="error-text">Vendor ID is required</span>
+          }
+          @if (form.get('vendor_id')?.hasError('minlength') && form.get('vendor_id')?.touched) {
+            <span class="error-text">Minimum 5 characters required</span>
+          }
+        </div>
+
+        <div class="custom-input-group">
+          <label>Password</label>
+          <div class="input-wrapper" [class.error]="form.get('password')?.invalid && form.get('password')?.touched">
+            <span class="material-icons-round input-icon">lock</span>
+            <input [type]="hidePassword() ? 'password' : 'text'" formControlName="password" placeholder="Enter password" autocomplete="current-password">
+            <button type="button" class="toggle-password" (click)="hidePassword.set(!hidePassword())" aria-label="Toggle password visibility">
+              <span class="material-icons-round">{{ hidePassword() ? 'visibility' : 'visibility_off' }}</span>
+            </button>
+          </div>
+          @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+            <span class="error-text">Password is required</span>
+          }
+          @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+            <span class="error-text">Minimum 4 characters required</span>
+          }
+        </div>
+
+        <button mat-flat-button class="login-btn" type="submit" [disabled]="loading()">
+          @if (loading()) {
+            <mat-spinner diameter="18" />
+            <span>Authenticating…</span>
+          } @else {
+            <span class="material-icons-round">login</span>
+            <span>Sign In</span>
+          }
+        </button>
+
+      </form>
+
+      <div class="card-footer">
+        <span class="material-icons-round" style="font-size:14px">verified_user</span>
+        <span>Authenticated via SAP ERP · Session expires in 8 hours</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>

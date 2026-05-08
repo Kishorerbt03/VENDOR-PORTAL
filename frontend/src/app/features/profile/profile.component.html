@@ -1,0 +1,55 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>My Profile</h1>
+    <p>Vendor master data sourced from SAP LFA1 via ZMM_RBT_VND_PROFIL</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay"><mat-spinner diameter="40" /></div>
+  }
+
+  @if (profile(); as p) {
+    <div class="enhanced-profile-card">
+      <div class="card-header">
+        <div class="avatar-glow">
+          <div class="avatar">{{ p.name.charAt(0) }}</div>
+        </div>
+        <div class="header-text">
+          <h2>{{ p.name }}</h2>
+          <div class="vendor-id-badge">
+            <span class="material-icons-round">badge</span>
+            ID: {{ p.vendor_id }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-body">
+        <div class="info-group">
+          <div class="info-item">
+            <div class="icon-wrapper"><span class="material-icons-round">location_city</span></div>
+            <div class="info-content">
+              <label>City</label>
+              <span>{{ p.city || 'N/A' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="icon-wrapper"><span class="material-icons-round">public</span></div>
+            <div class="info-content">
+              <label>Country</label>
+              <span>{{ p.country || 'N/A' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="icon-wrapper"><span class="material-icons-round">phone</span></div>
+            <div class="info-content">
+              <label>Phone</label>
+              <span>{{ p.telephone || 'N/A' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

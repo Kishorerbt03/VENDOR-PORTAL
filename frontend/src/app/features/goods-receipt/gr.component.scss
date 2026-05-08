@@ -1,0 +1,28 @@
+.summary-row {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+}
+.sum-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  .material-icons-round { font-size: 16px; }
+  strong { font-weight: 700; }
+  &--green  { background: var(--success-light); color: var(--success); }
+  &--blue   { background: var(--primary-light); color: var(--primary); }
+}
+.table-card { overflow: hidden; }
+.table-toolbar {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px 8px; flex-wrap: wrap;
+  .search-field { width: 300px; }
+  .result-count { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+}
+.w-full { width: 100%; }
+.doc-no {
+  font-family: 'Courier New', monospace; font-size: 12px;
+  background: var(--bg); padding: 2px 6px; border-radius: 4px;
+  color: var(--primary); font-weight: 600;
+}
+.mvt-badge {
+  background: #e8f5e9; color: #2e7d32;
+  padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
+}
+.no-data { text-align: center; padding: 40px !important; color: var(--text-muted); font-size: 13px; }

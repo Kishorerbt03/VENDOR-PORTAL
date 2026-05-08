@@ -1,0 +1,194 @@
+<div class="shell">
+
+  <!-- ── Animated Background Orbs ── -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- ── LEFT SIDEBAR ── -->
+  <aside class="sidebar" [@sidebarAnim]="collapsed() ? 'collapsed' : 'expanded'">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon-wrap">
+          <span class="material-icons-round logo-icon">inventory_2</span>
+        </div>
+        @if (!collapsed()) {
+          <div class="logo-text">
+            <span class="logo-title">Vendor Portal</span>
+            <span class="logo-sub">SAP ERP</span>
+          </div>
+        }
+      </div>
+      <button class="collapse-btn" (click)="collapsed.set(!collapsed())"
+              [matTooltip]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+        <span class="material-icons-round">{{ collapsed() ? 'menu_open' : 'menu' }}</span>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-list">
+      @for (group of groups; track group) {
+        @if (!collapsed()) {
+          <div class="nav-group-label">{{ group }}</div>
+        }
+        @for (item of navItems; track item.route) {
+          @if (item.group === group) {
+            <a
+              class="nav-item"
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              [matTooltip]="collapsed() ? item.label : ''"
+              matTooltipPosition="right"
+            >
+              <span class="nav-icon-wrap">
+                <span class="material-icons-round nav-icon">{{ item.icon }}</span>
+              </span>
+              @if (!collapsed()) {
+                <span class="nav-label">{{ item.label }}</span>
+              }
+              <span class="nav-active-bar"></span>
+            </a>
+          }
+        }
+      }
+    </nav>
+
+    <!-- Bottom -->
+    <div class="sidebar-footer">
+      @if (!collapsed()) {
+        <div class="sidebar-date">
+          <span class="material-icons-round">today</span>
+          <span>{{ today | date:'d MMM yyyy' }}</span>
+        </div>
+      }
+      <button class="nav-item logout-btn" (click)="logout()"
+              [matTooltip]="collapsed() ? 'Sign Out' : ''" matTooltipPosition="right">
+        <span class="nav-icon-wrap logout-icon-wrap">
+          <span class="material-icons-round nav-icon">logout</span>
+        </span>
+        @if (!collapsed()) { <span class="nav-label">Sign Out</span> }
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="main-wrap">
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="topbar-divider"></span>
+        <span class="page-breadcrumb">SAP Vendor Portal</span>
+      </div>
+      <div class="topbar-center">
+        <div class="topbar-live-badge">
+          <span class="live-dot"></span>
+          <span>Connected to SAP</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        @if (vendor()) {
+          <div class="topbar-vendor">
+            <div class="topbar-avatar">
+              {{ vendor()!.name?.charAt(0) ?? 'V' }}
+            </div>
+            <div class="topbar-vendor-info">
+              <span class="topbar-vendor-name">{{ vendor()!.name }}</span>
+              <span class="topbar-vendor-role">Vendor</span>
+            </div>
+          </div>
+        }
+        <button class="topbar-icon-btn" (click)="togglePanel()"
+                [class.panel-active]="panelOpen()" matTooltip="Quick Panel">
+          <span class="material-icons-round">{{ panelOpen() ? 'view_sidebar' : 'dashboard_customize' }}</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── CONTENT ROW (router + right panel) ── -->
+    <div class="content-row">
+
+      <!-- Routed page -->
+      <main class="content">
+        <router-outlet #outlet="outlet" />
+      </main>
+
+      <!-- ── RIGHT PANEL ── -->
+      @if (panelOpen()) {
+        <aside class="right-panel" @fadeSlideIn>
+          <div class="panel-header">
+            <span class="material-icons-round panel-header-icon">dashboard_customize</span>
+            <span class="panel-title">Quick Panel</span>
+            <button class="panel-close-btn" (click)="togglePanel()">
+              <span class="material-icons-round">close</span>
+            </button>
+          </div>
+
+          <div class="panel-body">
+
+            <!-- Status indicator -->
+            <div class="panel-section">
+              <div class="panel-section-title">System Status</div>
+              <div class="panel-status-card">
+                <div class="status-row">
+                  <span class="status-dot green"></span>
+                  <span>SAP Backend</span>
+                  <span class="status-val">Online</span>
+                </div>
+                <div class="status-row">
+                  <span class="status-dot green"></span>
+                  <span>OData Services</span>
+                  <span class="status-val">Active</span>
+                </div>
+                <div class="status-row">
+                  <span class="status-dot blue"></span>
+                  <span>Session</span>
+                  <span class="status-val">Valid</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Navigation -->
+            <div class="panel-section">
+              <div class="panel-section-title">Quick Access</div>
+              <div class="panel-quick-grid">
+                @for (link of quickLinks; track link.route) {
+                  <a class="panel-quick-item" [routerLink]="link.route" (click)="panelOpen.set(false)">
+                    <span class="material-icons-round" [style.color]="link.color">{{ link.icon }}</span>
+                    <span>{{ link.label }}</span>
+                    <span class="material-icons-round panel-arrow">chevron_right</span>
+                  </a>
+                }
+              </div>
+            </div>
+
+            <!-- Vendor info -->
+            @if (vendor()) {
+              <div class="panel-section">
+                <div class="panel-section-title">Vendor Profile</div>
+                <div class="panel-vendor-card">
+                  <div class="panel-vendor-avatar">
+                    {{ vendor()!.name?.charAt(0) ?? 'V' }}
+                  </div>
+                  <div class="panel-vendor-info">
+                    <div class="panel-vendor-name">{{ vendor()!.name }}</div>
+                    <div class="panel-vendor-id">ID: {{ vendor()!.id }}</div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Date/time -->
+            <div class="panel-section">
+              <div class="panel-datetime">
+                <span class="material-icons-round">today</span>
+                <span>{{ today | date:'EEEE, d MMMM yyyy' }}</span>
+              </div>
+            </div>
+
+          </div>
+        </aside>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,133 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title-row">
+      <span class="material-icons-round page-icon" style="background:#e8eaf6;color:#283593">receipt_long</span>
+      <div>
+        <h1>Invoices &amp; Finance</h1>
+        <p>FRS fields: BELNR · BUDAT · DMBTR · DUE_DATE · AGING · WAERS — via ZMM_VENDOR_FINANCE_RBT</p>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay"><mat-spinner diameter="40" /></div>
+  } @else {
+    <!-- Summary chips -->
+    <div class="summary-row">
+      <div class="sum-chip sum-chip--blue">
+        <span class="material-icons-round">receipt_long</span>
+        <span>Total Documents: <strong>{{ summary().total }}</strong></span>
+      </div>
+      <div class="sum-chip sum-chip--green">
+        <span class="material-icons-round">account_balance_wallet</span>
+        <span>Total Open: <strong>{{ fmt(summary().totalOpen) }}</strong></span>
+      </div>
+    </div>
+
+    <div class="card table-card">
+      <!-- Search bar -->
+      <div class="table-toolbar">
+        <mat-form-field appearance="outline" class="search-field">
+          <span class="material-icons-round" matPrefix style="margin-right:8px;color:#9ca3af">search</span>
+          <mat-label>Search Invoices</mat-label>
+          <input matInput [ngModel]="filter()" (ngModelChange)="setFilter($event)" placeholder="Doc no, year, currency…">
+          @if (filter()) {
+            <button matSuffix mat-icon-button (click)="setFilter('')"><span class="material-icons-round">close</span></button>
+          }
+        </mat-form-field>
+        <span class="result-count">{{ filtered().length }} record(s)</span>
+      </div>
+
+      <table mat-table [dataSource]="paginated()" matSort class="w-full">
+        <!-- Doc No Column -->
+        <ng-container matColumnDef="belnr">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Document No</th>
+          <td mat-cell *matCellDef="let r">
+            <div style="display: flex; flex-direction: column;">
+              <code class="doc-no">{{ r.belnr }}</code>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Year Column -->
+        <ng-container matColumnDef="gjahr">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Year</th>
+          <td mat-cell *matCellDef="let r">{{ r.gjahr }}</td>
+        </ng-container>
+
+        <!-- Due Date Column -->
+        <ng-container matColumnDef="faedt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Due Date</th>
+          <td mat-cell *matCellDef="let r">{{ r.faedt | date:'dd MMM yyyy' }}</td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="budat">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Posting Date</th>
+          <td mat-cell *matCellDef="let r">{{ r.budat | date:'dd MMM yyyy' }}</td>
+        </ng-container>
+
+        <!-- Amount Column -->
+        <ng-container matColumnDef="dmbtr">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+          <td mat-cell *matCellDef="let r" [class.credit-amt]="r.shkzg === 'H'">
+            <strong>{{ fmt(r.dmbtr) }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Currency Column -->
+        <ng-container matColumnDef="waers">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Currency</th>
+          <td mat-cell *matCellDef="let r">{{ r.waers }}</td>
+        </ng-container>
+
+        <!-- Aging Column -->
+        <ng-container matColumnDef="aging_bucket">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Aging</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="aging-chip" [ngClass]="agingClass(r.aging_days)">
+              {{ r.aging_bucket }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="badge" [class.cleared]="r.status === 'Cleared'" [class.open]="r.status === 'Open'">
+              {{ r.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- PDF Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>PDF</th>
+          <td mat-cell *matCellDef="let r">
+            <button mat-icon-button class="pdf-btn" (click)="downloadPdf(r.belnr)" matTooltip="Download PDF">
+              <span class="material-icons-round">picture_as_pdf</span>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data" [attr.colspan]="columns.length">
+            <span class="material-icons-round">inbox</span>
+            <p>No invoices match your search.</p>
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator
+        [length]="filtered().length"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPage($event)"
+        showFirstLastButtons />
+    </div>
+  }
+</div>

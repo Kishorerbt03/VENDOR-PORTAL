@@ -1,0 +1,40 @@
+.summary-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.sum-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  .material-icons-round { font-size: 16px; } strong { font-weight: 700; }
+  &--blue   { background: var(--primary-light); color: var(--primary); }
+  &--green  { background: var(--success-light); color: var(--success); }
+  &--orange { background: var(--accent-light);  color: var(--accent);  }
+  &--red    { background: var(--danger-light);  color: var(--danger);  }
+}
+.table-card { overflow: hidden; }
+.table-toolbar {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px 8px; flex-wrap: wrap;
+  .search-field { width: 300px; }
+  .result-count { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+}
+.w-full { width: 100%; }
+.doc-no {
+  font-family: 'Courier New', monospace; font-size: 12px;
+  background: var(--bg); padding: 2px 6px; border-radius: 4px; color: var(--primary); font-weight: 600;
+}
+.ref-no { font-size: 12px; color: var(--text-secondary); }
+.desc-cell { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doc-type {
+  padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
+  &.type-inv { background: #e3f0ff; color: #1565c0; }
+  &.type-cr  { background: var(--success-light); color: var(--success); }
+  &.type-dr  { background: var(--danger-light); color: var(--danger); }
+}
+.credit-amt { color: var(--success); font-weight: 600; }
+.pdf-btn { color: var(--danger) !important; .material-icons-round { font-size: 18px; } }
+
+.aging-chip {
+  display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  &.aging-ok     { background: var(--success-light); color: var(--success); }
+  &.aging-warn   { background: var(--warning-light); color: var(--warning); }
+  &.aging-orange { background: var(--accent-light);  color: var(--accent);  }
+  &.aging-danger { background: var(--danger-light);  color: var(--danger);  }
+}
+.no-data { text-align: center; padding: 40px !important; color: var(--text-muted); font-size: 13px; }

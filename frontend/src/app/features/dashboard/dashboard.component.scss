@@ -1,0 +1,108 @@
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  
+  h1 { margin: 0; }
+  p { margin: 4px 0 0; }
+
+  .dash-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    background: #fff;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-pill);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    
+    .material-icons-round { font-size: 18px; color: var(--primary); }
+  }
+}
+
+// ── Stats Grid ───────────────────────────────────────────────────────────
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+// ── Charts Row ───────────────────────────────────────────────────────────
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card {
+  padding: 24px;
+  
+  .chart-header {
+    margin-bottom: 32px;
+    h3 { font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0; }
+    p { font-size: 13px; color: var(--text-secondary); margin: 4px 0 0; font-weight: 600; }
+  }
+
+  .chart-body {
+    height: 320px;
+    position: relative;
+  }
+
+  &--sm {
+    .chart-body { height: 280px; }
+  }
+}
+
+// ── Quick access ─────────────────────────────────────────────────────────
+.quick-links {
+  padding: 24px;
+  
+  h3 { font-size: 16px; font-weight: 800; margin-bottom: 24px; color: var(--text-primary); }
+
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .quick-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: #fff;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 14px;
+    transition: all var(--transition);
+
+    .material-icons-round {
+      font-size: 22px;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 8px;
+      border-radius: 10px;
+    }
+
+    &:hover {
+      background: #fff;
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      color: var(--primary);
+    }
+  }
+}

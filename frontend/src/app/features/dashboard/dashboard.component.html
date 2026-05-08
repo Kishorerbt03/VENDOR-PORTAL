@@ -1,0 +1,176 @@
+<div class="page-container">
+  @if (loading()) {
+    <div class="loading-overlay"><mat-spinner diameter="40" /></div>
+  } @else {
+    <!-- Header -->
+    <div class="page-header dash-header" @fadeSlideIn>
+      <div>
+        <h1>{{ greeting() }}, {{ vendor()?.name?.split(' ')?.[0] ?? 'Vendor' }}</h1>
+        <p>Here's a live snapshot of your procurement &amp; financial activity.</p>
+      </div>
+      <div class="dash-meta">
+        <span class="material-icons-round">today</span>
+        <span>{{ today | date:'EEEE, d MMMM yyyy' }}</span>
+      </div>
+    </div>
+
+    @if (stats(); as s) {
+      <!-- ── Stat cards ──────────────────────────────────────────── -->
+      <div class="stats-grid" [@staggerList]="6">
+
+        <!-- RFQ -->
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e3f0ff">
+            <span class="material-icons-round" style="color:#1565c0">request_quote</span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">
+              {{ s.openRFQ }}<span class="stat-total">/{{ s.totalRFQ }}</span>
+            </div>
+            <div class="stat-label">Open RFQs</div>
+          </div>
+          <a routerLink="/portal/rfq" class="stat-arrow" matTooltip="View RFQs">
+            <span class="material-icons-round">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- PO -->
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#fff3e0">
+            <span class="material-icons-round" style="color:#e65100">shopping_cart</span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">
+              {{ s.openPO }}<span class="stat-total">/{{ s.totalPO }}</span>
+            </div>
+            <div class="stat-label">Open Purchase Orders</div>
+          </div>
+          <a routerLink="/portal/po" class="stat-arrow" matTooltip="View POs">
+            <span class="material-icons-round">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- GR -->
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e8f5e9">
+            <span class="material-icons-round" style="color:#2e7d32">local_shipping</span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ s.totalGR }}</div>
+            <div class="stat-label">Goods Receipts</div>
+          </div>
+          <a routerLink="/portal/gr" class="stat-arrow" matTooltip="View GR">
+            <span class="material-icons-round">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- PO Value -->
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#f3e5f5">
+            <span class="material-icons-round" style="color:#6a1b9a">currency_rupee</span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value po-value">{{ formatCurrency(s.poValue) }}</div>
+            <div class="stat-label">Total PO Value</div>
+          </div>
+          <a routerLink="/portal/po" class="stat-arrow" matTooltip="View POs">
+            <span class="material-icons-round">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- Total Invoices -->
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e8eaf6">
+            <span class="material-icons-round" style="color:#283593">receipt_long</span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ s.totalInvoices }}</div>
+            <div class="stat-label">Total Invoices</div>
+          </div>
+          <a routerLink="/portal/invoices" class="stat-arrow" matTooltip="View Invoices">
+            <span class="material-icons-round">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- Open Payable -->
+        <div class="stat-card stat-card--alert">
+          <div class="stat-icon" style="background:#ffebee">
+            <span class="material-icons-round" style="color:#c62828">account_balance_wallet</span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value po-value" style="color:#c62828">{{ formatCurrency(s.openPayable) }}</div>
+            <div class="stat-label">Open Payables</div>
+          </div>
+          <a routerLink="/portal/invoices" class="stat-arrow" matTooltip="View Invoices">
+            <span class="material-icons-round">arrow_forward</span>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- ── Charts row ──────────────────────────────────────────── -->
+      <div class="charts-row" @fadeSlideIn>
+
+        <div class="card chart-card">
+          <div class="chart-header">
+            <div>
+              <h3>PO Value Breakdown</h3>
+              <p>Net Value by Purchase Order</p>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas baseChart [data]="barChartData()" [options]="barOptions" type="bar"></canvas>
+          </div>
+        </div>
+
+        <div class="card chart-card chart-card--sm">
+          <div class="chart-header">
+            <div>
+              <h3>PO Status</h3>
+              <p>Open vs closed</p>
+            </div>
+          </div>
+          <div class="chart-body">
+            <canvas baseChart [data]="doughnutData()" [options]="doughnutOptions" type="doughnut"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Quick access ───────────────────────────────────────── -->
+      <div class="card quick-links">
+        <h3>Quick Access</h3>
+        <div class="links-grid">
+          <a routerLink="/portal/rfq" class="quick-link">
+            <span class="material-icons-round">request_quote</span>
+            <span>RFQ</span>
+          </a>
+          <a routerLink="/portal/po" class="quick-link">
+            <span class="material-icons-round">shopping_cart</span>
+            <span>Purchase Orders</span>
+          </a>
+          <a routerLink="/portal/gr" class="quick-link">
+            <span class="material-icons-round">local_shipping</span>
+            <span>Goods Receipts</span>
+          </a>
+          <a routerLink="/portal/invoices" class="quick-link">
+            <span class="material-icons-round">receipt_long</span>
+            <span>Invoices</span>
+          </a>
+          <a routerLink="/portal/aging" class="quick-link">
+            <span class="material-icons-round">schedule</span>
+            <span>Aging Report</span>
+          </a>
+          <a routerLink="/portal/memos" class="quick-link">
+            <span class="material-icons-round">swap_horiz</span>
+            <span>Credit / Debit Memos</span>
+          </a>
+          <a routerLink="/portal/profile" class="quick-link">
+            <span class="material-icons-round">person</span>
+            <span>My Profile</span>
+          </a>
+        </div>
+      </div>
+    }
+  }
+</div>

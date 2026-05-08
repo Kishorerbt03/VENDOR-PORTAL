@@ -1,0 +1,98 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title-row">
+      <span class="material-icons-round page-icon" style="background:#e8f5e9;color:#2e7d32">local_shipping</span>
+      <div>
+        <h1>Goods Receipt</h1>
+        <p>Inbound material movements from SAP MSEG — Movement Type 101 via ZMM_VENDOR_GR_RBT</p>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-overlay"><mat-spinner diameter="40" /></div>
+  } @else {
+    <!-- Summary chips -->
+    <div class="summary-row">
+      <div class="sum-chip sum-chip--green">
+        <span class="material-icons-round">local_shipping</span>
+        <span>Total GR Documents: <strong>{{ summary().total }}</strong></span>
+      </div>
+      <div class="sum-chip sum-chip--blue">
+        <span class="material-icons-round">inventory</span>
+        <span>Total Quantity: <strong>{{ summary().totalQuantity }}</strong></span>
+      </div>
+    </div>
+
+    <div class="card table-card">
+      <!-- Search bar -->
+      <div class="table-toolbar">
+        <mat-form-field appearance="outline" class="search-field">
+          <span class="material-icons-round" matPrefix style="margin-right:8px;color:#9ca3af">search</span>
+          <mat-label>Search Goods Receipts</mat-label>
+          <input matInput [ngModel]="filter()" (ngModelChange)="setFilter($event)" placeholder="GR no, PO no, material…">
+          @if (filter()) {
+            <button matSuffix mat-icon-button (click)="setFilter('')"><span class="material-icons-round">close</span></button>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+
+        @if (hasActiveFilters()) {
+          <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
+            <span class="material-icons-round" style="margin-right:6px">filter_alt_off</span> Clear Filters
+          </button>
+        }
+
+        <span class="result-count">{{ filtered().length }} record(s)</span>
+      </div>
+
+      <table mat-table [dataSource]="paginated()" matSort class="w-full">
+        <!-- GR Document Column -->
+        <ng-container matColumnDef="gr_no">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Document No</th>
+          <td mat-cell *matCellDef="let r"><code class="doc-no">{{ r.gr_no }}</code></td>
+        </ng-container>
+        <ng-container matColumnDef="gr_year">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Year</th>
+          <td mat-cell *matCellDef="let r">{{ r.gr_year }}</td>
+        </ng-container>
+        <ng-container matColumnDef="material">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Material No</th>
+          <td mat-cell *matCellDef="let r">{{ r.material }}</td>
+        </ng-container>
+        <ng-container matColumnDef="gr_date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Posting Date</th>
+          <td mat-cell *matCellDef="let r">{{ r.gr_date | date:'dd MMM yyyy' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Quantity</th>
+          <td mat-cell *matCellDef="let r"><strong>{{ r.quantity }}</strong></td>
+        </ng-container>
+        <ng-container matColumnDef="uom">
+          <th mat-header-cell *matHeaderCellDef>UoM</th>
+          <td mat-cell *matCellDef="let r"><span class="mvt-badge">{{ r.uom }}</span></td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data" [attr.colspan]="columns.length">
+            <span class="material-icons-round">inbox</span>
+            <p>No goods receipts match your filters.</p>
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator
+        [length]="filtered().length"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPage($event)"
+        showFirstLastButtons />
+    </div>
+  }
+</div>

@@ -1,0 +1,236 @@
+<div class="memo-page">
+
+  <!-- ── PAGE HEADER ────────────────────────────────────────────────── -->
+  <div class="memo-header">
+    <div class="memo-header__title-row">
+      <div class="memo-header__icon-wrap">
+        <span class="material-icons-round">swap_horiz</span>
+      </div>
+      <div>
+        <h1>Credit &amp; Debit Memos</h1>
+        <p>Adjustment documents fetched from SAP via <code>MemoSet</code> OData entity</p>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="memo-header__search">
+      <span class="material-icons-round search-icon">search</span>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search by document no. or year…"
+        [value]="filter()"
+        (input)="setFilter($any($event.target).value)"
+      />
+      @if (filter()) {
+        <button class="search-clear" (click)="clearFilter()">
+          <span class="material-icons-round">close</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── LOADING ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="memo-loader">
+      <mat-spinner diameter="48" />
+      <p>Fetching memo data from SAP…</p>
+    </div>
+  }
+
+  @if (!loading()) {
+
+    <!-- ── SUMMARY CARDS ───────────────────────────────────────────── -->
+    <div class="memo-stats">
+      <div class="stat-card stat-card--total">
+        <div class="stat-card__icon"><span class="material-icons-round">receipt</span></div>
+        <div class="stat-card__body">
+          <span class="stat-card__label">Total Memos</span>
+          <span class="stat-card__value">{{ summary().total }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-card--credit">
+        <div class="stat-card__icon"><span class="material-icons-round">arrow_circle_down</span></div>
+        <div class="stat-card__body">
+          <span class="stat-card__label">Credit Memos</span>
+          <span class="stat-card__value">{{ summary().creditCount }}</span>
+          <span class="stat-card__sub">{{ fmt(summary().creditTotal) }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-card--debit">
+        <div class="stat-card__icon"><span class="material-icons-round">arrow_circle_up</span></div>
+        <div class="stat-card__body">
+          <span class="stat-card__label">Debit Memos</span>
+          <span class="stat-card__value">{{ summary().debitCount }}</span>
+          <span class="stat-card__sub">{{ fmt(summary().debitTotal) }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card" [class.stat-card--positive]="summary().netBalance >= 0" [class.stat-card--negative]="summary().netBalance < 0">
+        <div class="stat-card__icon"><span class="material-icons-round">account_balance_wallet</span></div>
+        <div class="stat-card__body">
+          <span class="stat-card__label">Net Balance</span>
+          <span class="stat-card__value">{{ fmt(summary().netBalance) }}</span>
+          <span class="stat-card__sub">{{ summary().netBalance >= 0 ? 'In your favour' : 'Payable' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMPTY STATE ─────────────────────────────────────────────── -->
+    @if (all().length === 0) {
+      <div class="memo-empty">
+        <span class="material-icons-round">inbox</span>
+        <h3>No Memos Found</h3>
+        <p>No credit or debit memos were found for your vendor account.</p>
+      </div>
+    }
+
+    @if (all().length > 0) {
+
+      <!-- ── SPLIT SECTIONS ──────────────────────────────────────────── -->
+      <div class="memo-sections">
+
+        <!-- Credit Memo Section -->
+        <section class="memo-section memo-section--credit">
+          <div class="memo-section__header">
+            <div class="memo-section__title">
+              <span class="section-dot credit-dot"></span>
+              <span class="material-icons-round">arrow_circle_down</span>
+              <h2>Credit Memos</h2>
+              <span class="section-badge credit-badge">{{ filteredCredits().length }}</span>
+            </div>
+            <p class="memo-section__desc">Amounts credited to your account (reductions in payables)</p>
+          </div>
+
+          <div class="memo-table-wrap">
+            @if (filteredCredits().length === 0) {
+              <div class="table-empty">
+                <span class="material-icons-round">search_off</span>
+                <p>No credit memos match your search.</p>
+              </div>
+            } @else {
+              <table class="memo-table">
+                <thead>
+                  <tr>
+                    <th>Doc No.</th>
+                    <th>Year</th>
+                    <th>Posting Date</th>
+                    <th>Currency</th>
+                    <th class="text-right">Amount</th>
+                    <th class="text-center">Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of paginatedCredits(); track row.belnr + row.gjahr) {
+                    <tr class="memo-row memo-row--credit">
+                      <td><code class="doc-no">{{ row.belnr }}</code></td>
+                      <td class="year-cell">{{ row.gjahr }}</td>
+                      <td>{{ fmtDate(row.budat) }}</td>
+                      <td>{{ row.waers || 'INR' }}</td>
+                      <td class="text-right">
+                        <span class="amount credit-amount">{{ fmt(row.dmbtr) }}</span>
+                      </td>
+                      <td class="text-center">
+                        <span class="type-badge credit-type">
+                          <span class="material-icons-round">arrow_circle_down</span>
+                          CREDIT
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+
+              <div class="table-footer">
+                <span class="table-footer__count">{{ filteredCredits().length }} records</span>
+                <div class="table-footer__total">
+                  Total Credit: <strong class="credit-total">{{ fmt(summary().creditTotal) }}</strong>
+                </div>
+                <mat-paginator
+                  [length]="filteredCredits().length"
+                  [pageSize]="pageSize()"
+                  [pageIndex]="creditPageIndex()"
+                  [pageSizeOptions]="[5, 10, 25]"
+                  (page)="onCreditPage($event)"
+                  showFirstLastButtons>
+                </mat-paginator>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Debit Memo Section -->
+        <section class="memo-section memo-section--debit">
+          <div class="memo-section__header">
+            <div class="memo-section__title">
+              <span class="section-dot debit-dot"></span>
+              <span class="material-icons-round">arrow_circle_up</span>
+              <h2>Debit Memos</h2>
+              <span class="section-badge debit-badge">{{ filteredDebits().length }}</span>
+            </div>
+            <p class="memo-section__desc">Amounts debited from your account (increases in payables)</p>
+          </div>
+
+          <div class="memo-table-wrap">
+            @if (filteredDebits().length === 0) {
+              <div class="table-empty">
+                <span class="material-icons-round">search_off</span>
+                <p>No debit memos match your search.</p>
+              </div>
+            } @else {
+              <table class="memo-table">
+                <thead>
+                  <tr>
+                    <th>Doc No.</th>
+                    <th>Year</th>
+                    <th>Posting Date</th>
+                    <th>Currency</th>
+                    <th class="text-right">Amount</th>
+                    <th class="text-center">Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of paginatedDebits(); track row.belnr + row.gjahr) {
+                    <tr class="memo-row memo-row--debit">
+                      <td><code class="doc-no">{{ row.belnr }}</code></td>
+                      <td class="year-cell">{{ row.gjahr }}</td>
+                      <td>{{ fmtDate(row.budat) }}</td>
+                      <td>{{ row.waers || 'INR' }}</td>
+                      <td class="text-right">
+                        <span class="amount debit-amount">{{ fmt(row.dmbtr) }}</span>
+                      </td>
+                      <td class="text-center">
+                        <span class="type-badge debit-type">
+                          <span class="material-icons-round">arrow_circle_up</span>
+                          DEBIT
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+
+              <div class="table-footer">
+                <span class="table-footer__count">{{ filteredDebits().length }} records</span>
+                <div class="table-footer__total">
+                  Total Debit: <strong class="debit-total">{{ fmt(summary().debitTotal) }}</strong>
+                </div>
+                <mat-paginator
+                  [length]="filteredDebits().length"
+                  [pageSize]="pageSize()"
+                  [pageIndex]="debitPageIndex()"
+                  [pageSizeOptions]="[5, 10, 25]"
+                  (page)="onDebitPage($event)"
+                  showFirstLastButtons>
+                </mat-paginator>
+              </div>
+            }
+          </div>
+        </section>
+
+      </div>
+    }
+  }
+</div>
