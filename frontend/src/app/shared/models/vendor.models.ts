@@ -19,6 +19,7 @@ export interface VendorProfile {
 export interface RFQ {
   rfq_no: string;
   bsart: string;
+  item_name?: string;
   rfq_date: string;
   purchasing_org: string;
   status: string;
@@ -27,6 +28,7 @@ export interface RFQ {
 export interface PurchaseOrder {
   po_no: string;
   bsart: string;
+  item_name?: string;
   po_date: string;
   net_value: number;
   status: string;
@@ -36,6 +38,7 @@ export interface PurchaseOrder {
 export interface GoodsReceipt {
   gr_no: string;
   gr_year: string;
+  item_name?: string;
   material: string;
   gr_date: string;
   quantity: number;

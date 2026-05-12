@@ -34,7 +34,7 @@ export class PoComponent implements OnInit {
   pageIndex = signal(0);
   pageSize = signal(10);
 
-  columns = ['po_no', 'bsart', 'po_date', 'net_value', 'status', 'currency'];
+  columns = ['po_no', 'bsart', 'item_name', 'po_date', 'net_value', 'status', 'currency'];
 
   statusOptions = ['All', 'Open', 'Partially Delivered', 'Closed'];
 
@@ -44,6 +44,7 @@ export class PoComponent implements OnInit {
     return this.all().filter(r => {
       const matchText = !q || r.po_no.toLowerCase().includes(q)
         || r.bsart.toLowerCase().includes(q)
+        || (r.item_name && r.item_name.toLowerCase().includes(q))
         || r.status.toLowerCase().includes(q);
       const matchStatus = s === 'All' || r.status === s;
       return matchText && matchStatus;

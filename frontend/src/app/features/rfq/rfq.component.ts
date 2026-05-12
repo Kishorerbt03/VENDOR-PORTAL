@@ -33,13 +33,14 @@ export class RfqComponent implements OnInit {
   pageIndex = signal(0);
   pageSize = signal(10);
 
-  columns = ['rfq_no', 'bsart', 'rfq_date', 'purchasing_org', 'status'];
+  columns = ['rfq_no', 'bsart', 'item_name', 'rfq_date', 'purchasing_org', 'status'];
 
   filtered = computed(() => {
     const q = this.filter().toLowerCase();
     return this.all().filter(r => {
       const matchText = !q || r.rfq_no.toLowerCase().includes(q)
         || r.bsart.toLowerCase().includes(q)
+        || (r.item_name && r.item_name.toLowerCase().includes(q))
         || r.purchasing_org.toLowerCase().includes(q);
       return matchText;
     });

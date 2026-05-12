@@ -33,7 +33,7 @@ export class GrComponent implements OnInit {
   pageIndex = signal(0);
   pageSize = signal(10);
 
-  columns = ['gr_no', 'gr_year', 'material', 'gr_date', 'quantity', 'uom'];
+  columns = ['gr_no', 'gr_year', 'item_name', 'material', 'gr_date', 'quantity', 'uom'];
 
   plants = computed(() => ['All']);
 
@@ -42,6 +42,7 @@ export class GrComponent implements OnInit {
     return this.all().filter(r => {
       const matchText = !q || r.gr_no.toLowerCase().includes(q)
         || r.material.toLowerCase().includes(q)
+        || (r.item_name && r.item_name.toLowerCase().includes(q))
         || r.gr_year.toLowerCase().includes(q);
       return matchText;
     });

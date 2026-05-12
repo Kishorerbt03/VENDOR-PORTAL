@@ -61,6 +61,7 @@ const mapProfile = (d) => ({
 const mapRFQ = (d) => ({
   rfq_no: d.Ebeln || d.rfq_no,
   bsart: d.Bsart || d.bsart,
+  item_name: d.ItemName || d.item_name || 'N/A',
   rfq_date: parseDate(d.Bedat || d.rfq_date),
   purchasing_org: d.Ekorg || d.purchasing_org || 'N/A',
   status: 'Open' // Adding status back as requested
@@ -69,6 +70,7 @@ const mapRFQ = (d) => ({
 const mapPO = (d) => ({
   po_no: d.Ebeln || d.po_no,
   bsart: d.Bsart || d.bsart,
+  item_name: d.ItemName || d.item_name || 'N/A',
   po_date: parseDate(d.Bedat || d.po_date),
   net_value: safeParseFloat(d.Netwr || 0),
   status: 'Open',
@@ -78,6 +80,7 @@ const mapPO = (d) => ({
 const mapGR = (d) => ({
   gr_no: d.Mblnr || d.gr_no,
   gr_year: d.Mjahr || d.gr_year,
+  item_name: d.ItemName || d.item_name || 'N/A',
   gr_date: parseDate(d.Budat || d.gr_date),
   material: d.Matnr || d.material || 'N/A',
   quantity: safeParseFloat(d.Menge || 0),

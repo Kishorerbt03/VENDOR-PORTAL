@@ -90,7 +90,7 @@
         @if (vendor()) {
           <div class="topbar-vendor">
             <div class="topbar-avatar">
-              {{ vendor()!.name?.charAt(0) ?? 'V' }}
+              {{ vendor()!.name.charAt(0) }}
             </div>
             <div class="topbar-vendor-info">
               <span class="topbar-vendor-name">{{ vendor()!.name }}</span>
@@ -168,11 +168,11 @@
                 <div class="panel-section-title">Vendor Profile</div>
                 <div class="panel-vendor-card">
                   <div class="panel-vendor-avatar">
-                    {{ vendor()!.name?.charAt(0) ?? 'V' }}
+                    {{ vendor()!.name.charAt(0) }}
                   </div>
                   <div class="panel-vendor-info">
                     <div class="panel-vendor-name">{{ vendor()!.name }}</div>
-                    <div class="panel-vendor-id">ID: {{ vendor()!.id }}</div>
+                    <div class="panel-vendor-id">ID: {{ vendor()!.vendor_id }}</div>
                   </div>
                 </div>
               </div>
