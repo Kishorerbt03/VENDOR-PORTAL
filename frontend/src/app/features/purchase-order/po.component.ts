@@ -34,7 +34,7 @@ export class PoComponent implements OnInit {
   pageIndex = signal(0);
   pageSize = signal(10);
 
-  columns = ['po_no', 'bsart', 'item_name', 'po_date', 'net_value', 'status', 'currency'];
+  columns = ['po_no', 'bsart', 'item_name', 'quantity', 'unit', 'po_date', 'net_value', 'status', 'currency'];
 
   statusOptions = ['All', 'Open', 'Partially Delivered', 'Closed'];
 

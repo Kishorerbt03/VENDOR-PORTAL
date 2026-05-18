@@ -64,6 +64,8 @@ const mapRFQ = (d) => ({
   item_name: d.ItemName || d.item_name || 'N/A',
   rfq_date: parseDate(d.Bedat || d.rfq_date),
   purchasing_org: d.Ekorg || d.purchasing_org || 'N/A',
+  quantity: safeParseFloat(d.Quantity || d.quantity || 0),
+  unit: d.Unit || d.unit || 'PC',
   status: 'Open' // Adding status back as requested
 });
 
@@ -73,6 +75,8 @@ const mapPO = (d) => ({
   item_name: d.ItemName || d.item_name || 'N/A',
   po_date: parseDate(d.Bedat || d.po_date),
   net_value: safeParseFloat(d.Netwr || 0),
+  quantity: safeParseFloat(d.Quantity || d.quantity || 0),
+  unit: d.Unit || d.unit || 'PC',
   status: 'Open',
   currency: d.Waers || d.currency || 'INR'
 });

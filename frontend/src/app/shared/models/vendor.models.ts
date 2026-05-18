@@ -22,6 +22,8 @@ export interface RFQ {
   item_name?: string;
   rfq_date: string;
   purchasing_org: string;
+  quantity?: number;
+  unit?: string;
   status: string;
 }
 
@@ -31,6 +33,8 @@ export interface PurchaseOrder {
   item_name?: string;
   po_date: string;
   net_value: number;
+  quantity?: number;
+  unit?: string;
   status: string;
   currency: string;
 }

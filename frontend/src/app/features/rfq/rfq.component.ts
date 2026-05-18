@@ -33,7 +33,7 @@ export class RfqComponent implements OnInit {
   pageIndex = signal(0);
   pageSize = signal(10);
 
-  columns = ['rfq_no', 'bsart', 'item_name', 'rfq_date', 'purchasing_org', 'status'];
+  columns = ['rfq_no', 'bsart', 'item_name', 'quantity', 'unit', 'rfq_date', 'purchasing_org', 'status'];
 
   filtered = computed(() => {
     const q = this.filter().toLowerCase();
