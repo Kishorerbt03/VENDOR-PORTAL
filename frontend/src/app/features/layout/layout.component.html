@@ -58,15 +58,16 @@
       @if (!collapsed()) {
         <div class="sidebar-date">
           <span class="material-icons-round">today</span>
-          <span>{{ today | date:'d MMM yyyy' }}</span>
+          <span>{{ today | date:'dd-MM-yyyy' }}</span>
         </div>
       }
       <button class="nav-item logout-btn" (click)="logout()"
               [matTooltip]="collapsed() ? 'Sign Out' : ''" matTooltipPosition="right">
         <span class="nav-icon-wrap logout-icon-wrap">
           <span class="material-icons-round nav-icon">logout</span>
+          
         </span>
-        @if (!collapsed()) { <span class="nav-label">Sign Out</span> }
+        @if (!collapsed()) { <span class="nav-label"></span> }
       </button>
     </div>
   </aside>
@@ -182,7 +183,7 @@
             <div class="panel-section">
               <div class="panel-datetime">
                 <span class="material-icons-round">today</span>
-                <span>{{ today | date:'EEEE, d MMMM yyyy' }}</span>
+                <span>{{ today | date:'EEEE, dd-MM-yyyy' }}</span>
               </div>
             </div>
 

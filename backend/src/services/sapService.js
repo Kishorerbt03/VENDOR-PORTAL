@@ -125,6 +125,12 @@ exports.login = async (vendorId, password) => {
     // Assuming data is an array and we take the first item, or it's a single object
     const result = Array.isArray(data) ? data[0] : data;
     if (!result) throw new Error('Invalid response format');
+    
+    // SAP returns Status: 'FAILED' for invalid credentials
+    if (result.Status === 'FAILED') {
+      throw new Error('Invalid credentials');
+    }
+    
     return result;
   } catch (err) {
     console.error('[sapService.login] Error:', err.message);

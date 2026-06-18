@@ -39,6 +39,15 @@
 
       <!-- Filter bar -->
       <div class="filter-bar">
+        <mat-form-field appearance="outline" class="filter-select">
+          <span class="material-icons-round" matPrefix style="margin-right:8px;color:#9ca3af">calendar_today</span>
+          <mat-label>Fiscal Year</mat-label>
+          <mat-select [value]="yearFilter()" (valueChange)="setYearFilter($event)">
+            @for (opt of years(); track opt) {
+              <mat-option [value]="opt">{{ opt }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
         @if (hasActiveFilters()) {
           <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
@@ -61,7 +70,14 @@
         </ng-container>
         <ng-container matColumnDef="item_name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Item Name</th>
-          <td mat-cell *matCellDef="let r">{{ r.item_name }}</td>
+          <td mat-cell *matCellDef="let r">
+            <div class="item-name-cell" style="display:flex;align-items:center;gap:8px;">
+              <span>{{ r.item_name }}</span>
+              @if (r.items.length > 1) {
+                <span class="more-badge">+{{ r.items.length - 1 }} more</span>
+              }
+            </div>
+          </td>
         </ng-container>
         <ng-container matColumnDef="material">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Material No</th>
@@ -69,7 +85,7 @@
         </ng-container>
         <ng-container matColumnDef="gr_date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Posting Date</th>
-          <td mat-cell *matCellDef="let r">{{ r.gr_date | date:'dd MMM yyyy' }}</td>
+          <td mat-cell *matCellDef="let r">{{ r.gr_date | date:'dd-MM-yyyy' }}</td>
         </ng-container>
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Quantity</th>
@@ -81,7 +97,7 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;" class="clickable-row" (click)="openDetails(row)"></tr>
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell no-data" [attr.colspan]="columns.length">
             <span class="material-icons-round">inbox</span>
@@ -97,6 +113,94 @@
         [pageSizeOptions]="[5, 10, 25, 50]"
         (page)="onPage($event)"
         showFirstLastButtons />
+    </div>
+  }
+
+  <!-- GR Details Popup Modal Overlay -->
+  @if (selectedGr(); as gr) {
+    <div class="modal-overlay" (click)="closeDetails()">
+      <div class="modal-card gr-modal" (click)="$event.stopPropagation()">
+        
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <div class="modal-title-area">
+            <span class="material-icons-round modal-icon" style="background:#e8f5e9;color:#2e7d32">local_shipping</span>
+            <div>
+              <h2>Goods Receipt Details</h2>
+              <p>Document No: <code class="modal-doc-no">{{ gr.gr_no }}</code></p>
+            </div>
+          </div>
+          <button mat-icon-button class="modal-close-btn" (click)="closeDetails()">
+            <span class="material-icons-round">close</span>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          
+          <!-- KPI Quick Summary Grid -->
+          <div class="modal-kpi-grid">
+            <div class="kpi-card">
+              <span class="kpi-label">Fiscal Year</span>
+              <span class="kpi-value badge-style" style="background:#e8f5e9;color:#2e7d32;">{{ gr.gr_year }}</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Posting Date</span>
+              <span class="kpi-value">{{ gr.gr_date | date:'dd-MM-yyyy' }}</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Total Quantity</span>
+              <span class="kpi-value font-bold" style="color:#2e7d32;">{{ gr.quantity }}</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">UoM</span>
+              <span class="mvt-badge" style="background:#e8f5e9;color:#2e7d32;">{{ gr.uom }}</span>
+            </div>
+          </div>
+
+          <!-- Items Table -->
+          <div class="modal-section-title">
+            <span class="material-icons-round">list_alt</span>
+            <h3>Line Items ({{ gr.items.length }})</h3>
+          </div>
+
+          <div class="modal-table-container">
+            <table class="modal-items-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item Name / Description</th>
+                  <th>Material No</th>
+                  <th class="text-right">Qty</th>
+                  <th>UoM</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of gr.items; track $index) {
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>
+                      <span class="item-name-text">{{ item.item_name || 'N/A' }}</span>
+                    </td>
+                    <td><code class="doc-no">{{ item.material }}</code></td>
+                    <td class="text-right font-semibold">{{ item.quantity || 0 }}</td>
+                    <td><span class="uom-badge">{{ item.uom || 'EA' }}</span></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button mat-flat-button style="background:#2e7d32;color:#fff;" (click)="closeDetails()">
+            <span class="material-icons-round" style="margin-right:6px">check</span> 
+          </button>
+        </div>
+
+      </div>
     </div>
   }
 </div>

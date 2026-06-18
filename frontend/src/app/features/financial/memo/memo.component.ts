@@ -126,7 +126,10 @@ export class MemoComponent implements OnInit {
     const s = d.replace(/-/g, '');
     if (s.length === 8) {
       const dt = new Date(`${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}`);
-      return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const day = String(dt.getDate()).padStart(2, '0');
+      const month = String(dt.getMonth() + 1).padStart(2, '0');
+      const year = dt.getFullYear();
+      return `${day}-${month}-${year}`;
     }
     return d;
   }

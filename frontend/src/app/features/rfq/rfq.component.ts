@@ -13,6 +13,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PoService } from '../../core/services/po.service';
 import { RFQ } from '../../shared/models/vendor.models';
 
+interface GroupedRFQ {
+  rfq_no: string;
+  bsart: string;
+  item_name?: string;
+  quantity?: number;
+  unit?: string;
+  rfq_date: string;
+  purchasing_org: string;
+  status: string;
+  items: RFQ[];
+}
+
 @Component({
   selector: 'app-rfq',
   standalone: true,
@@ -33,16 +45,52 @@ export class RfqComponent implements OnInit {
   pageIndex = signal(0);
   pageSize = signal(10);
 
+  // Modal State
+  selectedRfq = signal<GroupedRFQ | null>(null);
+
+  statusOptions = ['All', 'Open', 'Quoted', 'Closed'];
+
   columns = ['rfq_no', 'bsart', 'item_name', 'quantity', 'unit', 'rfq_date', 'purchasing_org', 'status'];
+
+  // Group by document no
+  grouped = computed(() => {
+    const raw = this.all();
+    const map = new Map<string, RFQ[]>();
+    for (const r of raw) {
+      if (!map.has(r.rfq_no)) {
+        map.set(r.rfq_no, []);
+      }
+      map.get(r.rfq_no)!.push(r);
+    }
+
+    const list: GroupedRFQ[] = [];
+    for (const [rfq_no, items] of map.entries()) {
+      const first = items[0];
+      list.push({
+        rfq_no,
+        bsart: first.bsart,
+        item_name: first.item_name,
+        quantity: first.quantity,
+        unit: first.unit,
+        rfq_date: first.rfq_date,
+        purchasing_org: first.purchasing_org,
+        status: first.status,
+        items
+      });
+    }
+    return list;
+  });
 
   filtered = computed(() => {
     const q = this.filter().toLowerCase();
-    return this.all().filter(r => {
+    const s = this.statusFilter();
+    return this.grouped().filter(r => {
       const matchText = !q || r.rfq_no.toLowerCase().includes(q)
         || r.bsart.toLowerCase().includes(q)
-        || (r.item_name && r.item_name.toLowerCase().includes(q))
-        || r.purchasing_org.toLowerCase().includes(q);
-      return matchText;
+        || r.purchasing_org.toLowerCase().includes(q)
+        || r.items.some(item => item.item_name && item.item_name.toLowerCase().includes(q));
+      const matchStatus = s === 'All' || r.status === s;
+      return matchText && matchStatus;
     });
   });
 
@@ -51,10 +99,10 @@ export class RfqComponent implements OnInit {
     return this.filtered().slice(start, start + this.pageSize());
   });
 
-  hasActiveFilters = computed(() => this.filter() !== '');
+  hasActiveFilters = computed(() => this.filter() !== '' || this.statusFilter() !== 'All');
 
   summary = computed(() => {
-    const d = this.all();
+    const d = this.grouped();
     return {
       total: d.length,
     };
@@ -70,8 +118,17 @@ export class RfqComponent implements OnInit {
   }
 
   setFilter(val: string) { this.filter.set(val); this.pageIndex.set(0); }
+  setStatusFilter(val: string) { this.statusFilter.set(val); this.pageIndex.set(0); }
   onPage(e: PageEvent) { this.pageIndex.set(e.pageIndex); this.pageSize.set(e.pageSize); }
-  clearFilters() { this.filter.set(''); this.pageIndex.set(0); }
+  clearFilters() { this.filter.set(''); this.statusFilter.set('All'); this.pageIndex.set(0); }
+
+  openDetails(rfq: GroupedRFQ) {
+    this.selectedRfq.set(rfq);
+  }
+
+  closeDetails() {
+    this.selectedRfq.set(null);
+  }
 
   badgeClass(status: string) {
     return { 'Open': 'open', 'RFQ': 'open', 'Quoted': 'quoted', 'Closed': 'closed' }[status] ?? 'closed';
